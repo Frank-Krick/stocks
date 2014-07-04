@@ -15,11 +15,16 @@ package com.franksreich.stock.ui
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.franksreich.stock.model.StockFactSheet
 import com.franksreich.stock.model.dividend.DividendPaymentDirectoryLoader
 import com.franksreich.stock.model.quandl.quandlLoader
 import com.franksreich.stock.function.screener.dividendGrowthScreener
 import com.franksreich.stock.model.symbol.StockSymbolFileLoader
+import com.franksreich.stock.model.database.stockFactSheetDatabase
+
 import com.github.nscala_time.time.Imports.DateTime
+
+import org.bson.types.ObjectId
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -30,7 +35,7 @@ import scala.concurrent.duration._
  */
 object stockConsole {
 
-  def main(args: Array[String]) {
+  private def stockScreen() {
     val dividendPaymentDirectoryLoader = new DividendPaymentDirectoryLoader
     val dividendPaymentMap = dividendPaymentDirectoryLoader.dividendPayments
     val stockSymbolFileLoader = new StockSymbolFileLoader(
@@ -97,4 +102,9 @@ object stockConsole {
       println(currentSharePriceMap(stockSymbol))
     }
   }
+
+  def main(args: Array[String]) {
+    stockFactSheetDatabase.saveStockFactSheet(new StockFactSheet(new ObjectId(), "MSFT", DateTime.now))
+  }
+
 }
