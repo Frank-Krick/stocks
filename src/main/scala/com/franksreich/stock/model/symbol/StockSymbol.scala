@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.franksreich.stock.dividend
-
-import scala.io.Source
+package com.franksreich.stock.model.symbol
 
 /**
- * Load dividends from file
+ * Represents a stock symbol
  */
-class DividendPaymentFileLoader(private val filename: String) {
-
-  def createDividends = {
-    val source = Source.fromFile(filename)
-    val dividendPaymentLoader = new DividendPaymentLoader(source)
-    val dividends = dividendPaymentLoader.createDividends
-    source.close()
-    dividends
-  }
-
+class StockSymbol(val stockSymbol: String, val name: String) {
+  override def toString = stockSymbol + ":" + name
 }

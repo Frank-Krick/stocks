@@ -1,3 +1,5 @@
+package com.franksreich.stock.ui
+
 /*
  * Copyright 2014 Frank Krick
  *
@@ -13,16 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.franksreich.stock.dividend.DividendPaymentDirectoryLoader
-import com.franksreich.stock.quandl.quandlLoader
-import com.franksreich.stock.screener.dividendGrowthScreener
-import com.franksreich.stock.symbol.StockSymbolFileLoader
-
+import com.franksreich.stock.model.dividend.DividendPaymentDirectoryLoader
+import com.franksreich.stock.model.quandl.quandlLoader
+import com.franksreich.stock.function.screener.dividendGrowthScreener
+import com.franksreich.stock.model.symbol.StockSymbolFileLoader
 import com.github.nscala_time.time.Imports.DateTime
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
 /**

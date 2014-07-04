@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.franksreich.stock.dividend
+package com.franksreich.stock.model.dividend
 
-import com.github.nscala_time.time.Imports.DateTime
-
-import scala.math.BigDecimal
+import scala.io.Source
 
 /**
- * Represents a dividend payment
+ * Load dividends from file
  */
-class DividendPayment(val dateTime: DateTime, val payment: BigDecimal) {
-  override def toString = "Date: " + dateTime.toString() + "\nPayment: " + payment.toString
+class DividendPaymentFileLoader(private val filename: String) {
+
+  def createDividends = {
+    val source = Source.fromFile(filename)
+    val dividendPaymentLoader = new DividendPaymentLoader(source)
+    val dividends = dividendPaymentLoader.createDividends
+    source.close()
+    dividends
+  }
+
 }

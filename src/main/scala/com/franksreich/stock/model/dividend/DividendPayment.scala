@@ -13,23 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.franksreich.stock.symbol
+package com.franksreich.stock.model.dividend
 
-import scala.io.Source
+import com.github.nscala_time.time.Imports.DateTime
 
-/** Loads stock symbols from file */
-class StockSymbolFileLoader(private val filename: String) {
+import scala.math.BigDecimal
 
-  def loadStockSymbols: Map[String, StockSymbol] = {
-    val source = Source.fromFile(filename)
-    var result = Map[String, StockSymbol]()
-    for (lines <- source.getLines()) {
-      val tokens = lines.split(',')
-      val symbol = tokens(0).toUpperCase
-      val name = if (tokens.size > 2) tokens(2) else "None"
-      result = result + new Tuple2(symbol, new StockSymbol(symbol, name))
-    }
-    result
-  }
-
+/**
+ * Represents a dividend payment
+ */
+class DividendPayment(val dateTime: DateTime, val payment: BigDecimal) {
+  override def toString = "Date: " + dateTime.toString() + "\nPayment: " + payment.toString
 }

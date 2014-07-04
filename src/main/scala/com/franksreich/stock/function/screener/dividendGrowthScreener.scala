@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.franksreich.stock.screener
+package com.franksreich.stock.function.screener
 
-import com.franksreich.stock.dividend.DividendPayment
+import com.franksreich.stock.model.dividend.DividendPayment
 import scala.annotation.tailrec
 
 /**

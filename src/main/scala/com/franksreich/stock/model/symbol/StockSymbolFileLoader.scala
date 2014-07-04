@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.franksreich.stock.symbol
+package com.franksreich.stock.model.symbol
 
-/**
- * Represents a stock symbol
- */
-class StockSymbol(val stockSymbol: String, val name: String) {
-  override def toString = stockSymbol + ":" + name
+import scala.io.Source
+
+/** Loads stock symbols from file */
+class StockSymbolFileLoader(private val filename: String) {
+
+  def loadStockSymbols: Map[String, StockSymbol] = {
+    val source = Source.fromFile(filename)
+    var result = Map[String, StockSymbol]()
+    for (lines <- source.getLines()) {
+      val tokens = lines.split(',')
+      val symbol = tokens(0).toUpperCase
+      val name = if (tokens.size > 2) tokens(2) else "None"
+      result = result + new Tuple2(symbol, new StockSymbol(symbol, name))
+    }
+    result
+  }
+
 }
