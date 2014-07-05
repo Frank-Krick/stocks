@@ -21,7 +21,7 @@ import com.franksreich.stock.config
 
 import com.mongodb.casbah.Imports.MongoClientURI
 import com.mongodb.casbah.Imports.MongoClient
-import com.mongodb.casbah.commons.conversions.scala._
+import com.mongodb.casbah.Imports.MongoDBObject
 
 /** Access stock fact sheets */
 object stockFactSheetDatabase {
@@ -30,7 +30,24 @@ object stockFactSheetDatabase {
   val database = mongoClient("stocks")
   val collection = database("factSheets")
 
+  /** Save fact sheet to database
+   *
+   * @param factSheet
+   */
   def saveStockFactSheet(factSheet: StockFactSheet) {
     collection.insert(converter.convertStockFactSheetToBson(factSheet))
   }
+
+  /** Loads a fact sheet identified by stock symbol
+   *
+   * @param stockSymbol
+   * @return Stock fact sheet loaded from database
+   */
+  def loadStockFactSheet(stockSymbol: String): StockFactSheet = {
+    val query = MongoDBObject("stockSymbol" -> stockSymbol)
+    val result = collection.findOne(query)
+    val doc = result.get
+    converter.convertStockFactSheetFromBson(new MongoDBObject(doc))
+  }
+
 }

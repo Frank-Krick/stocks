@@ -16,10 +16,19 @@
 package com.franksreich.stock.model
 
 import org.bson.types.ObjectId
+
 import org.joda.time.DateTime
 
 /** Fact sheet for a single stock */
 class StockFactSheet(
     val id: ObjectId,
-    val stockSymbol: String,
-    val lastUpdateTimestamp: DateTime) {}
+    val stockSymbol: String) {
+
+  object timestamps {
+    var cashAndEquivalents = DateTime.now
+    var longTermDebt = DateTime.now
+  }
+
+  var cashAndEquivalents = List[(DateTime, BigDecimal)]()
+  var longTermDebt = List[(DateTime, BigDecimal)]()
+}

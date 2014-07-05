@@ -16,21 +16,52 @@
 package com.franksreich.stock.model.database.utils
 
 import com.franksreich.stock.model.StockFactSheet
+import com.mongodb.BasicDBList
 
 import com.mongodb.casbah.Imports.MongoDBObject
 import com.mongodb.casbah.commons.Imports.DBObject
 import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
 
-/** Converter between model classes to bson */
+import org.bson.types.ObjectId
+
+import org.joda.time.DateTime
+
+/** Converter between model classes and bson representation */
 object converter {
   RegisterJodaTimeConversionHelpers()
 
+  /** Convert stock fact sheet to bson
+   *
+   * @param factSheet Fact sheet to convert
+   * @return Bson representation of the fact sheet
+   */
   def convertStockFactSheetToBson(factSheet: StockFactSheet): DBObject = {
+    val timestamps = MongoDBObject(
+      "cashAndEquivalents" -> factSheet.timestamps.cashAndEquivalents,
+      "longTermDebt" -> factSheet.timestamps.longTermDebt
+    )
+
     MongoDBObject(
       "_id" -> factSheet.id,
       "stockSymbol" -> factSheet.stockSymbol,
-      "lastUpdateTimestamp" -> factSheet.lastUpdateTimestamp
+      "cashAndEquivalents" -> factSheet.cashAndEquivalents.map( tuple => (tuple._1, tuple._2.toString())),
+      "longTermDebt" -> factSheet.longTermDebt.map( tuple => (tuple._1, tuple._2.toString())),
+      "timestamps" -> timestamps
     )
+  }
+
+  def convertStockFactSheetFromBson(factSheetBson: MongoDBObject): StockFactSheet = {
+    val factSheet = new StockFactSheet(
+      factSheetBson.as[ObjectId]("_id"),
+      factSheetBson.as[String]("stockSymbol"))
+
+    val cashAndEquivalents = factSheetBson.as[List[BasicDBList]]("cashAndEquivalents")
+    val cashAndEquivalentsConverted = cashAndEquivalents map { list =>
+      (list.get(0).asInstanceOf[DateTime], BigDecimal(list.get(1).asInstanceOf[String]))
+    }
+
+    factSheet.cashAndEquivalents = cashAndEquivalentsConverted
+    factSheet
   }
 
 }

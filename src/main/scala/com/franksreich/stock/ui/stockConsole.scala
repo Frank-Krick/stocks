@@ -1,5 +1,3 @@
-package com.franksreich.stock.ui
-
 /*
  * Copyright 2014 Frank Krick
  *
@@ -15,6 +13,8 @@ package com.franksreich.stock.ui
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.franksreich.stock.ui
+
 import com.franksreich.stock.model.StockFactSheet
 import com.franksreich.stock.model.dividend.DividendPaymentDirectoryLoader
 import com.franksreich.stock.model.quandl.quandlLoader
@@ -104,7 +104,13 @@ object stockConsole {
   }
 
   def main(args: Array[String]) {
-    stockFactSheetDatabase.saveStockFactSheet(new StockFactSheet(new ObjectId(), "MSFT", DateTime.now))
+    val stockFactSheet = new StockFactSheet(new ObjectId(), "MSFT")
+
+    stockFactSheet.cashAndEquivalents= List((DateTime.now, BigDecimal("2.05")), (DateTime.now, BigDecimal("2.03")),
+      (DateTime.now, BigDecimal("2.01")))
+
+    stockFactSheetDatabase.saveStockFactSheet(stockFactSheet)
+    val sfs = stockFactSheetDatabase.loadStockFactSheet("MSFT")
   }
 
 }
