@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.franksreich.stock.model.database
+package com.franksreich.stock.model.source.database
 
-import com.franksreich.stock.model.database.utils.converter
+import com.franksreich.stock.model.source.database.utils.converter
 import com.franksreich.stock.model.StockFactSheet
 import com.franksreich.stock.config
 
 import com.mongodb.casbah.Imports.MongoClientURI
 import com.mongodb.casbah.Imports.MongoClient
 import com.mongodb.casbah.Imports.MongoDBObject
+
+import scala.Option
 
 /** Access stock fact sheets */
 object stockFactSheetDatabase {
@@ -32,7 +34,7 @@ object stockFactSheetDatabase {
 
   /** Save fact sheet to database
    *
-   * @param factSheet
+   * @param factSheet Fact sheet to save to database
    */
   def saveStockFactSheet(factSheet: StockFactSheet) {
     collection.insert(converter.convertStockFactSheetToBson(factSheet))
@@ -40,14 +42,17 @@ object stockFactSheetDatabase {
 
   /** Loads a fact sheet identified by stock symbol
    *
-   * @param stockSymbol
+   * @param stockSymbol Stock symbol of the fact sheet to retrieve
    * @return Stock fact sheet loaded from database
    */
-  def loadStockFactSheet(stockSymbol: String): StockFactSheet = {
+  def loadStockFactSheet(stockSymbol: String): Option[StockFactSheet] = {
     val query = MongoDBObject("stockSymbol" -> stockSymbol)
     val result = collection.findOne(query)
-    val doc = result.get
-    converter.convertStockFactSheetFromBson(new MongoDBObject(doc))
+
+    result match {
+      case Some(document) => Option(converter.convertStockFactSheetFromBson(new MongoDBObject(document)))
+      case None => None
+    }
   }
 
 }

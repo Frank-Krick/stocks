@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.franksreich.stock.model.quandl
+package com.franksreich.stock.model.source.quandl
 
 import com.franksreich.stock.config
 import com.github.nscala_time.time.Imports.DateTimeFormat

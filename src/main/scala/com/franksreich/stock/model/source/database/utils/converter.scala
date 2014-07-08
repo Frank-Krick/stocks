@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.franksreich.stock.model.database.utils
+package com.franksreich.stock.model.source.database.utils
 
 import com.franksreich.stock.model.StockFactSheet
 import com.mongodb.BasicDBList
@@ -50,18 +50,36 @@ object converter {
     )
   }
 
+  /** Convert bson to stock fact sheet
+   *
+   * @param factSheetBson Bson representation of a stock fact sheet
+   * @return Stock fact sheet
+   */
   def convertStockFactSheetFromBson(factSheetBson: MongoDBObject): StockFactSheet = {
     val factSheet = new StockFactSheet(
       factSheetBson.as[ObjectId]("_id"),
       factSheetBson.as[String]("stockSymbol"))
 
-    val cashAndEquivalents = factSheetBson.as[List[BasicDBList]]("cashAndEquivalents")
-    val cashAndEquivalentsConverted = cashAndEquivalents map { list =>
+    factSheet.cashAndEquivalents = parseBsonDateValueList("cashAndEquivalents", factSheetBson)
+    factSheet.longTermDebt = parseBsonDateValueList("longTermDebt", factSheetBson)
+
+    val timestampsMongoDb = factSheetBson.as[MongoDBObject]("timestamps")
+    factSheet.timestamps.cashAndEquivalents = timestampsMongoDb.as[DateTime]("cashAndEquivalents")
+    factSheet.timestamps.longTermDebt = timestampsMongoDb.as[DateTime]("longTermDebt")
+    factSheet
+  }
+
+  /** Parse a bson list
+   *
+   * @param key Key of the bson list
+   * @param bson Bson representation
+   * @return List with date and value
+   */
+  private def parseBsonDateValueList(key: String, bson: MongoDBObject): List[(DateTime, BigDecimal)] = {
+    val cashAndEquivalents = bson.as[List[BasicDBList]](key)
+    cashAndEquivalents map { list =>
       (list.get(0).asInstanceOf[DateTime], BigDecimal(list.get(1).asInstanceOf[String]))
     }
-
-    factSheet.cashAndEquivalents = cashAndEquivalentsConverted
-    factSheet
   }
 
 }

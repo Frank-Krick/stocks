@@ -17,10 +17,10 @@ package com.franksreich.stock.ui
 
 import com.franksreich.stock.model.StockFactSheet
 import com.franksreich.stock.model.dividend.DividendPaymentDirectoryLoader
-import com.franksreich.stock.model.quandl.quandlLoader
+import com.franksreich.stock.model.source.quandl.quandlLoader
 import com.franksreich.stock.function.screener.dividendGrowthScreener
 import com.franksreich.stock.model.symbol.StockSymbolFileLoader
-import com.franksreich.stock.model.database.stockFactSheetDatabase
+import com.franksreich.stock.model.source.database.stockFactSheetDatabase
 
 import com.github.nscala_time.time.Imports.DateTime
 
@@ -111,6 +111,18 @@ object stockConsole {
 
     stockFactSheetDatabase.saveStockFactSheet(stockFactSheet)
     val sfs = stockFactSheetDatabase.loadStockFactSheet("MSFT")
+
+    sfs match {
+      case Some(s) => println("Found MSFT")
+      case None => println("MSFT not found")
+    }
+
+    val sfss = stockFactSheetDatabase.loadStockFactSheet("XXX")
+
+    sfss match {
+      case Some(s) => println("Found XXX")
+      case None => println("XXX not found")
+    }
   }
 
 }
