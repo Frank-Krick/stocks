@@ -16,6 +16,7 @@
 package com.franksreich.stock.model.source.quandl
 
 import com.franksreich.stock.config
+
 import com.github.nscala_time.time.Imports.DateTimeFormat
 import com.github.nscala_time.time.Imports.DateTime
 

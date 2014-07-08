@@ -17,7 +17,6 @@ package com.franksreich.stock.model
 
 import com.franksreich.stock.model.source.database.stockFactSheetDatabase
 import com.franksreich.stock.model.source.quandl.quandlLoader
-import com.github.nscala_time.time.Imports
 
 import org.bson.types.ObjectId
 
@@ -31,6 +30,7 @@ class StockFactSheet(
     val id: ObjectId,
     val stockSymbol: String) {
 
+  /** Timestamps of the last updates for each member */
   object timestamps {
     var cashAndEquivalents = DateTime.now
     var longTermDebt = DateTime.now

@@ -23,8 +23,6 @@ import com.mongodb.casbah.Imports.MongoClientURI
 import com.mongodb.casbah.Imports.MongoClient
 import com.mongodb.casbah.Imports.MongoDBObject
 
-import scala.Option
-
 /** Access stock fact sheets */
 object stockFactSheetDatabase {
   val mongoClientUrl = MongoClientURI(config.mongoUrl)
