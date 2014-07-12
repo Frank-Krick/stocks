@@ -20,11 +20,8 @@ import com.franksreich.stock.model.dividend.DividendPaymentDirectoryLoader
 import com.franksreich.stock.model.source.quandl.quandlLoader
 import com.franksreich.stock.function.screener.dividendGrowthScreener
 import com.franksreich.stock.model.symbol.StockSymbolFileLoader
-import com.franksreich.stock.model.source.database.stockFactSheetDatabase
 
-import com.github.nscala_time.time.Imports.DateTime
-
-import org.bson.types.ObjectId
+import com.github.nscala_time.time.Imports.{DateTime, DateTimeFormat}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -104,25 +101,9 @@ object stockConsole {
   }
 
   def main(args: Array[String]) {
-    val stockFactSheet = new StockFactSheet(new ObjectId(), "MSFT")
-
-    stockFactSheet.cashAndEquivalents= List((DateTime.now, BigDecimal("2.05")), (DateTime.now, BigDecimal("2.03")),
-      (DateTime.now, BigDecimal("2.01")))
-
-    stockFactSheetDatabase.saveStockFactSheet(stockFactSheet)
-    val sfs = stockFactSheetDatabase.loadStockFactSheet("MSFT")
-
-    sfs match {
-      case Some(s) => println("Found MSFT")
-      case None => println("MSFT not found")
-    }
-
-    val sfss = stockFactSheetDatabase.loadStockFactSheet("XXX")
-
-    sfss match {
-      case Some(s) => println("Found XXX")
-      case None => println("XXX not found")
-    }
+    val targetDate = DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime("2014-07-11")
+    val sheet = StockFactSheet("T", targetDate)
+    Await.ready(sheet, 2 minutes)
   }
 
 }
