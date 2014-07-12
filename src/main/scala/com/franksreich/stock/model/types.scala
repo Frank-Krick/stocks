@@ -20,4 +20,5 @@ import com.github.nscala_time.time.Imports.DateTime
 /** Types */
 object types {
   type TimeSeries = List[(DateTime, BigDecimal)]
+  type TimestampedTimeSeries = (DateTime, TimeSeries)
 }

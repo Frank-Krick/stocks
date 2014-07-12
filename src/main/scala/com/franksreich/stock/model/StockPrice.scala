@@ -52,7 +52,7 @@ object StockPrice {
   }
 
   def apply() = new StockPrice(
-    DateTime.lastYear, List(), List(), List(), List(), List(), List(), List(), List(), List(), List(), List()
+    new DateTime(0), List(), List(), List(), List(), List(), List(), List(), List(), List(), List(), List()
   )
 }
 

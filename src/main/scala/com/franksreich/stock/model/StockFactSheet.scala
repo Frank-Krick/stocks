@@ -152,13 +152,13 @@ class StockFactSheet(
      *
      * Initialized to last year to ensure update if created
      */
-    var cashAndEquivalents = DateTime.lastYear
+    var cashAndEquivalents = new DateTime(0)
 
     /** Last update time for cash and equivalents
      *
      * Initialized to last year to ensure update if created
      */
-    var longTermDebt = DateTime.lastYear
+    var longTermDebt = new DateTime(0)
   }
 
   /** Cash and equivalents time series */
