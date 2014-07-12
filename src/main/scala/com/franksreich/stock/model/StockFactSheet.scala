@@ -15,6 +15,7 @@
  */
 package com.franksreich.stock.model
 
+import com.franksreich.stock.model.fundamentals.Fundamentals
 import com.franksreich.stock.model.source.database.stockFactSheetDatabase
 import com.franksreich.stock.model.source.quandl.quandlLoader
 
@@ -28,7 +29,7 @@ import scala.concurrent.{Await, Promise, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-/** Factory for stock fact sheets */
+/** Companion class for stock fact sheets */
 object StockFactSheet {
   val logger = LoggerFactory.getLogger(StockFactSheet.getClass)
 
@@ -71,7 +72,7 @@ object StockFactSheet {
     * @return Updated stock fact sheet
     */
   private def create(stockSymbol: String): Future[StockFactSheet] = {
-    val stockFactSheet = new StockFactSheet(new ObjectId(), stockSymbol)
+    val stockFactSheet = new StockFactSheet(new ObjectId(), stockSymbol, Fundamentals())
     update(stockFactSheet, DateTime.now)
   }
 
@@ -87,7 +88,7 @@ object StockFactSheet {
     val cashAndEquivalentsOption = updateVariable(
       toBeDate,
       stockFactSheet.timestamps.cashAndEquivalents,
-      quandlLoader.cashAndEquivalents,
+      quandlLoader.balanceSheet.cashEquivalents,
       stockFactSheet.stockSymbol
     )
 
@@ -134,8 +135,7 @@ object StockFactSheet {
       toBeDate: DateTime,
       timestamp: DateTime,
       loader: LoaderFunction,
-      stockSymbol: String):
-  Option[Future[List[(DateTime, BigDecimal)]]] = {
+      stockSymbol: String): Option[Future[List[(DateTime, BigDecimal)]]] = {
     if (needsUpdate(toBeDate, timestamp)) Option(loader(stockSymbol))
     else None
   }
@@ -144,7 +144,8 @@ object StockFactSheet {
 /** Fact sheet for a single stock */
 class StockFactSheet(
     val id: ObjectId,
-    val stockSymbol: String) {
+    val stockSymbol: String,
+    val fundamentals: Fundamentals) {
 
   /** Timestamps of the last updates for each member */
   object timestamps {
@@ -167,5 +168,7 @@ class StockFactSheet(
   /** Long term debt time series */
   var longTermDebt = List[(DateTime, BigDecimal)]()
 
+  /** Stock prices */
   var stockPrice = StockPrice()
+
 }

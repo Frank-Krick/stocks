@@ -27,6 +27,7 @@ import com.stackmob.newman.dsl.GET
 import com.stackmob.newman.response.HttpResponse
 
 import net.liftweb.json._
+import org.slf4j.LoggerFactory
 
 import scala.math.BigDecimal
 import scala.concurrent.Future
@@ -36,6 +37,8 @@ import java.net.URL
 
 /** Load data using the quandl rest api */
 object quandlLoader {
+  val logger = LoggerFactory.getLogger(quandlLoader.getClass)
+
   /** Type of the callback functions */
   type Callback = (List[(DateTime, BigDecimal)]) => Unit
 
@@ -65,7 +68,9 @@ object quandlLoader {
    * @param stockSymbol Identifies the company
    * @return Future for list with tuples containing date and value
    */
-  def cashAndEquivalents(stockSymbol: String): Future[List[(DateTime, BigDecimal)]] = {
+  def interestIncomeExpenseNetNonOperatingcashAndEquivalents(
+      stockSymbol: String): Future[List[(DateTime, BigDecimal)]] = {
+
     secFundamentals(stockSymbol, "_CASH_EQUIVALENTS_Q")
   }
 
@@ -78,6 +83,381 @@ object quandlLoader {
     secFundamentals(stockSymbol, "_TOTAL_LONG_TERM_DEBT_Q")
   }
 
+  /** Quandl access for income statement fundamentals */
+  object incomeStatement {
+    /** Get revenue from quandl and return a future for it
+      *
+      * @param stockSymbol Identifies the company
+      * @return Future for list with tuples containing date and value
+      */
+    def revenue(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_REVENUE_Q")
+    }
+
+    /** Get total revenue from quandl
+      *
+      * @param stockSymbol Identifies the company
+      * @return Total revenue
+      */
+    def totalRevenue(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_REVENUE_Q")
+    }
+
+    /** Get cost of revenue from quandl
+      *
+      * @param stockSymbol Identifies the company
+      * @return Cost of revenue total
+      */
+    def costOfRevenueTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_COST_OF_REVENUE_TOTAL_Q")
+    }
+
+    def grossProfit(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_GROSS_PROFIT_Q")
+    }
+
+    def sellingGeneralAdminExpensesTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_SELLING_GENERAL_ADMIN_EXPENSES_TOTAL_Q")
+    }
+
+    def gainLossOnSaleOfAssets(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_GAIN_LOSS_ON_SALE_OF_ASSETS_Q")
+    }
+
+    def otherNet(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_OTHER_NET_Q")
+    }
+
+    def incomeBeforeTax(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_INCOME_BEFORE_TAX_Q")
+    }
+
+    def incomeAfterTax(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_INCOME_AFTER_TAX_Q")
+    }
+
+    def netIncomeBeforeExtraItems(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_NET_INCOME_BEFORE_EXTRA_ITEMS_Q")
+    }
+
+    def netIncome(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_NET_INCOME_Q")
+    }
+
+    def incomeAvailableToCommonExcludingExtraItems(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_INCOME_AVAILABLE_TO_COMMON_EXCL_EXTRA_ITEMS_Q")
+    }
+
+    def incomeAvailableToCommonIncludingExtraItems(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_INCOME_AVAILABLE_TO_COMMON_INCL_EXTRA_ITEMS_Q")
+    }
+
+    def dilutedWeightedAverageShares(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_DILUTED_WEIGHTED_AVERAGE_SHARES_Q")
+    }
+
+    def dilutedEpsExcludingExtraordinaryItems(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_DILUTED_EPS_EXCLUDING_EXTRAORDINARY_ITEMS_Q")
+    }
+
+    def researchDevelopment(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_RESEARCH_DEVELOPMENT_Q")
+    }
+
+    def unusualExpenseIncome(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_UNUSUAL_EXPENSE_INCOME_Q")
+    }
+
+    def operatingIncome(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_OPERATING_INCOME_Q")
+    }
+
+    def minorityInterest(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_MINORITY_INTEREST_Q")
+    }
+
+    def dividendPerShareCommonStockPrimaryIssue(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_DIVIDENDS_PER_SHARE_COMMON_STOCK_PRIMARY_ISSUE_Q")
+    }
+
+    def depreciationAmortization(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_DEPRECIATION_AMORTIZATION_Q")
+    }
+
+    def equityInAffiliates(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_EQUITY_IN_AFFILIATES_Q")
+    }
+
+    def totalOperatingExpenses(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_OPERATING_EXPENSE_Q")
+    }
+
+    def dilutedNormalizedEps(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_DILUTED_NORMALIZED_EPS_Q")
+    }
+
+    def otherOperatingExpensesTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_OTHER_OPERATING_EXPENSES_TOTAL_Q")
+    }
+
+    def dilutionAdjustment(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_DILUTION_ADJUSTMENT_Q")
+    }
+
+    def otherRevenueTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_OTHER_REVENUE_TOTAL_Q")
+    }
+
+    def interestIncomeExpenseNetNonOperating(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_INTEREST_INCOME_EXPENSE_NET_NON_OPERATING_Q")
+    }
+
+  }
+
+  object balanceSheet {
+
+    def accountsReceivable(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_ACCOUNTS_RECEIVABLE_TRADE_NET_Q")
+    }
+
+    def totalInventory(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_INVENTORY_Q")
+    }
+
+    def prepaidExpenses(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_PREPAID_EXPENSES_Q")
+    }
+
+    def otherCurrentAssetsTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_OTHER_CURRENT_ASSETS_TOTAL_Q")
+    }
+
+    def totalCurrentAssets(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_CURRENT_ASSETS_Q")
+    }
+
+    def goodwillNet(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_GOODWILL_NET_Q")
+    }
+
+    def totalAssets(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_ASSETS_Q")
+    }
+
+    def accountsPayable(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_ACCOUNTS_PAYABLE_Q")
+    }
+
+    def currentPortOfLongTermDebtCapitalLeases(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CURRENT_PORT_OF_LT_DEBT_CAPITAL_LEASES_Q")
+    }
+
+    def totalCurrentLiabilities(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_CURRENT_LIABILITIES_Q")
+    }
+
+    def deferredIncomeTax(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_DEFERRED_INCOME_TAX_Q")
+    }
+
+    def totalLiabilities(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_LIABILITIES_Q")
+    }
+
+    def commonStockTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_COMMON_STOCK_TOTAL_Q")
+    }
+
+    def additionalPaidInCapital(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_ADDITIONAL_PAID_IN_CAPITAL_Q")
+    }
+
+    def retainedEarningsAccumulatedDeficit(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_RETAINED_EARNINGS_ACCUMULATED_DEFICIT_Q")
+    }
+
+    def totalEquity(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_EQUITY_Q")
+    }
+
+    def totalLiabilitiesShareholdersEquity(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_LIABILITIES_SHAREHOLDERS_EQUITY_Q")
+    }
+
+    def totalCommonSharesOutstanding(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_COMMON_SHARES_OUTSTANDING_Q")
+    }
+
+    def cashEquivalents(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CASH_EQUIVALENTS_Q")
+    }
+
+    def cashAndShortTermInvestments(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CASH_AND_SHORT_TERM_INVESTMENTS_Q")
+    }
+
+    def intangiblesNet(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_INTANGIBLES_NET_Q")
+    }
+
+    def otherLongTermAssetsTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_OTHER_LONG_TERM_ASSETS_TOTAL_Q")
+    }
+
+    def longTermDebt(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_LONG_TERM_DEBT_Q")
+    }
+
+    def totalLongTermDebt(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_LONG_TERM_DEBT_Q")
+    }
+
+    def totalDebt(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_DEBT_Q")
+    }
+
+    def minorityInterest(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_MINORITY_INTEREST_Q")
+    }
+
+    def otherEquityTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_OTHER_EQUITY_TOTAL_Q")
+    }
+
+    def propertyPlantEquipmentTotalGross(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_PROPERTY_PLANT_EQUIPMENT_TOTAL_GROSS_Q")
+    }
+
+    def otherCurrentLiabilitiesTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_OTHER_CURRENT_LIABILITIES_TOTAL_Q")
+    }
+
+    def otherLiabilitiesTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_OTHER_LIABILITIES_TOTAL_Q")
+    }
+
+    def longTermInvestments(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_LONG_TERM_INVESTMENTS_Q")
+    }
+
+    def accruedExpenses(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_ACCRUED_EXPENSES_Q")
+    }
+
+    def notesPayableShortTermDebt(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_NOTES_PAYABLE_SHORT_TERM_DEBT_Q")
+    }
+
+    def totalReceivablesNet(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_RECEIVABLES_NET_Q")
+    }
+
+    def preferredStockNonRedeemableDebt(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_PREFERRED_STOCK_NON_REDEEMABLE_NET_Q")
+    }
+
+    def shortTermInvestments(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_SHORT_TERM_INVESTMENTS_Q")
+    }
+
+    def capitalLeaseObligations(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CAPITAL_LEASE_OBLIGATIONS_Q")
+    }
+
+    def accumulatedDepreciationTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_ACCUMULATED_DEPRECIATION_TOTAL_Q")
+    }
+
+    def redeemablePreferredStockTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_REDEEMABLE_PREFERRED_STOCK_TOTAL_Q")
+    }
+
+    def treasuryStockCommon(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TREASURY_STOCK_COMMON_Q")
+    }
+
+  }
+
+  object cashFlow {
+
+    def netIncomeStartingLine(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_NET_INCOME_STARTING_LINE_Q")
+    }
+
+    def depreciationDepletion(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_DEPRECIATION_DEPLETION_Q")
+    }
+
+    def amortization(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_AMORTIZATION_Q")
+    }
+
+    def cashFromOperatingActivities(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CASH_FROM_OPERATING_ACTIVITIES_Q")
+    }
+
+    def issuanceRetirementOfDebtNet(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_ISSUANCE_RETIREMENT_OF_DEBT_NET_Q")
+    }
+
+    def cashFromFinancingActivities(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CASH_FROM_FINANCING_ACTIVITIES_Q")
+    }
+
+    def netChangeInCash(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_NET_CHANGE_IN_CASH_Q")
+    }
+
+    def cashInterestPaidSupplemental(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CASH_INTEREST_PAID_SUPPLEMENTAL_Q")
+    }
+
+    def cashTaxesPaidSupplemental(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CASH_TAXES_PAID_SUPPLEMENTAL_Q")
+    }
+
+    def deferredTaxes(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_DEFERRED_TAXES_Q")
+    }
+
+    def changesInWorkingCapital(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CHANGES_IN_WORKING_CAPITAL_Q")
+    }
+
+    def cashFromInvestingActivities(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CASH_FROM_INVESTING_ACTIVITIES_Q")
+    }
+
+    def foreignExchangeEffects(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_FOREIGN_EXCHANGE_EFFECTS_Q")
+    }
+
+    def nonCashItems(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_NON_CASH_ITEMS_Q")
+    }
+
+    def otherInvestingCashFlowItemsTotal(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_OTHER_INVESTING_CASH_FLOW_ITEMS_TOTAL_Q")
+    }
+
+    def financingCashFlowItems(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_FINANCING_CASH_FLOW_ITEMS_Q")
+    }
+
+    def totalCashDividendsPaid(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_TOTAL_CASH_DIVIDENDS_PAID_Q")
+    }
+
+    def issuanceRetirementOfStockNet(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_ISSUANCE_RETIREMENT_OF_STOCK_NET_Q")
+    }
+
+    def capitalExpenditures(stockSymbol: String): Future[TimeSeries] = {
+      secFundamentals(stockSymbol, "_CAPITAL_EXPENDITURES_Q")
+    }
+
+  }
+
   /** Creates a future for the sec query
    *
    * @param stockSymbol Identifies the company
@@ -85,6 +465,7 @@ object quandlLoader {
    * @return Future for list with tuples containing date and value
    */
   private def secFundamentals(stockSymbol: String, dataTable: String): Future[List[(DateTime, BigDecimal)]] = {
+    logger.debug("Loading SEC fundamental {} for stock symbol {}.", List(dataTable, stockSymbol))
     val url = fundamentalsUrl(fundamentalsDataSource, stockSymbol, dataTable)
     val future = GET(url).apply
     future map { response =>
@@ -189,7 +570,7 @@ object quandlLoader {
     dataList map { data =>
       val content = data.children
       val dateTime = dateTimeFormat.parseDateTime(content(dateIndex).extract[String])
-      val value = BigDecimal(content(value).extract[String])
+      val value = BigDecimal(content(valueIndex).extract[String])
       Tuple2(dateTime, value)
     }
   }

@@ -16,6 +16,7 @@
 package com.franksreich.stock.model.source.database.utils
 
 import com.franksreich.stock.model.StockFactSheet
+import com.franksreich.stock.model.fundamentals.Fundamentals
 import com.mongodb.BasicDBList
 
 import com.mongodb.casbah.Imports.MongoDBObject
@@ -58,7 +59,8 @@ object converter {
   def convertStockFactSheetFromBson(factSheetBson: MongoDBObject): StockFactSheet = {
     val factSheet = new StockFactSheet(
       factSheetBson.as[ObjectId]("_id"),
-      factSheetBson.as[String]("stockSymbol"))
+      factSheetBson.as[String]("stockSymbol"),
+      Fundamentals())
 
     factSheet.cashAndEquivalents = parseBsonDateValueList("cashAndEquivalents", factSheetBson)
     factSheet.longTermDebt = parseBsonDateValueList("longTermDebt", factSheetBson)
