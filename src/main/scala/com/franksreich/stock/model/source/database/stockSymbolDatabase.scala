@@ -15,51 +15,44 @@
  */
 package com.franksreich.stock.model.source.database
 
-import com.franksreich.stock.model.source.database.utils.stockFactSheetConverter
-import com.franksreich.stock.model.StockFactSheet
 import com.franksreich.stock.config
+import com.franksreich.stock.model.source.database.utils.stockSymbolConverter
+import com.franksreich.stock.model.symbol.StockSymbol
 
 import com.mongodb.casbah.Imports._
 
 import org.slf4j.LoggerFactory
 
-/** Access stock fact sheets */
-object stockFactSheetDatabase {
+/**
+ * Database to store information about stock symbols
+ */
+object stockSymbolDatabase {
   val logger = LoggerFactory.getLogger(stockFactSheetDatabase.getClass)
   val mongoClientUrl = MongoClientURI(config.mongoUrl)
   val mongoClient = MongoClient(mongoClientUrl)
   val database = mongoClient("stocks")
-  val collection = database("factSheets")
+  val collection = database("stockSymbols")
 
   collection.ensureIndex(MongoDBObject( "stockSymbol" -> 1 ), MongoDBObject( "unique" -> true ))
 
-  /** Save fact sheet to database
-   *
-   * @param factSheet Fact sheet to save to database
-   */
-  def saveStockFactSheet(factSheet: StockFactSheet) {
-    logger.debug("Save stock fact sheet {} to mongo db", List(factSheet.id.toString(), factSheet.stockSymbol))
-    val query = MongoDBObject("_id" -> factSheet.id)
-    val document = stockFactSheetConverter.convertStockFactSheetToBson(factSheet)
+  def saveStockSymbol(stockSymbol: StockSymbol) {
+    logger.debug("Save stock symbol {} to mongo db", List(stockSymbol.id.toString(), stockSymbol.stockSymbol))
+    val query = MongoDBObject( "_id" -> stockSymbol.id )
+    val document = stockSymbolConverter.stockSymbolToBson(stockSymbol)
     collection.update(query, document, upsert=true)
   }
 
-  /** Loads a fact sheet identified by stock symbol
-   *
-   * @param stockSymbol Stock symbol of the fact sheet to retrieve
-   * @return Stock fact sheet loaded from database
-   */
-  def loadStockFactSheet(stockSymbol: String): Option[StockFactSheet] = {
-    logger.debug("Try to load stock fact sheet {} from mongo db", stockSymbol)
+  def loadStockSymbol(stockSymbol: String): Option[StockSymbol] = {
+    logger.debug("Try to load stock symbol {} from mongo db", stockSymbol)
     val query = MongoDBObject("stockSymbol" -> stockSymbol)
     val result = collection.findOne(query)
 
     result match {
       case Some(document) =>
-        logger.debug("Stock fact sheet {} successfully loaded", stockSymbol)
-        Option(stockFactSheetConverter.convertStockFactSheetFromBson(new MongoDBObject(document)))
+        logger.debug("Stock symbol {} successfully loaded", stockSymbol)
+        Option(stockSymbolConverter.stockSymbolFromBson(document))
       case None =>
-        logger.debug("Stock fact sheet {} not found", stockSymbol)
+        logger.debug("Stock symbol {} not found", stockSymbol)
         None
     }
   }

@@ -26,7 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /** Factory for stock prices */
 object StockPrice {
   def apply(stockSymbol: String, old: StockPrice, toBeDate: DateTime): Future[StockPrice] = {
-    if (old.timestamp < toBeDate) quandlLoader.getStockPrices(stockSymbol)
+    if (old.timestamp < toBeDate) quandlLoader.stockPrices(stockSymbol)
     else Future { old }
   }
 

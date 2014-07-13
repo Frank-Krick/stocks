@@ -17,6 +17,7 @@ package com.franksreich.stock.model.source.quandl
 
 import com.franksreich.stock.config
 import com.franksreich.stock.model.StockPrice
+import com.franksreich.stock.model.symbol.StockSymbol
 import com.franksreich.stock.model.types.TimeSeries
 
 import com.github.nscala_time.time.Imports.DateTimeFormat
@@ -478,12 +479,27 @@ object quandlLoader {
    * @param stockSymbol Identifies the company
    * @return Time series of stock prices
    */
-  def getStockPrices(stockSymbol: String): Future[StockPrice] = {
+  def stockPrices(stockSymbol: String): Future[StockPrice] = {
     logger.debug("Loading stock prices for stock symbol {}", stockSymbol)
     val url = stockPriceUrl(stockSymbol)
     val future = GET(url).apply
     future map { response =>
       parsePriceJsonListResponse(response)
+    }
+  }
+
+  def stockSymbols: Future[List[StockSymbol]] = {
+    val url = new URL("https://s3.amazonaws.com/quandl-static-content/Ticker+CSV%27s/WIKI_tickers.csv")
+    val stockSymbolsResponse = GET(url).apply
+    stockSymbolsResponse map { response =>
+      val body = response.bodyString
+      val lines = body.lines.drop(1)
+      lines.toList map { line =>
+        val csv = line.split(',')
+        val stockSymbol = csv(0).split('/')(1)
+        val name = csv(1).replace('"', ' ').trim
+        StockSymbol(stockSymbol, name)
+      }
     }
   }
 

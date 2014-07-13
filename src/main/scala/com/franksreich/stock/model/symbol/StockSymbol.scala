@@ -15,9 +15,30 @@
  */
 package com.franksreich.stock.model.symbol
 
+import com.github.nscala_time.time.Imports._
+
+import org.bson.types.ObjectId
+
+object StockSymbol {
+
+  def apply(stockSymbol: String, name: String): StockSymbol = {
+    new StockSymbol(new ObjectId(), stockSymbol, name, DateTime.now, new DateTime(0))
+  }
+
+  def apply(id: ObjectId, stockSymbol: String, name: String, timestamp: DateTime, lastLoad: DateTime): StockSymbol = {
+    new StockSymbol(id, stockSymbol, name, timestamp, lastLoad)
+  }
+}
+
 /**
  * Represents a stock symbol
  */
-class StockSymbol(val stockSymbol: String, val name: String) {
-  override def toString = stockSymbol + ":" + name
+class StockSymbol(
+    val id: ObjectId,
+    val stockSymbol: String,
+    val name: String,
+    val timestamp: DateTime,
+    val lastLoad: DateTime) {
+
+  override def toString = stockSymbol + " : " + name
 }

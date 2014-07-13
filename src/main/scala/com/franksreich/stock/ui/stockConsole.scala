@@ -16,7 +16,8 @@
 package com.franksreich.stock.ui
 
 import com.franksreich.stock.model.StockFactSheet
-import com.franksreich.stock.model.source.database.stockFactSheetDatabase
+import com.franksreich.stock.model.source.database.{stockSymbolDatabase, stockFactSheetDatabase}
+import com.franksreich.stock.model.source.quandl.quandlLoader
 
 import com.github.nscala_time.time.Imports.{DateTime, DateTimeFormat}
 import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
@@ -33,6 +34,7 @@ object stockConsole {
   def main(args: Array[String]) {
     RegisterJodaTimeConversionHelpers()
 
+    /*
     val targetDate = DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime("2014-07-11")
     val stockFactSheet = StockFactSheet("MSFT", targetDate)
 
@@ -41,6 +43,13 @@ object stockConsole {
     }
 
     Thread.sleep(5000 * 5)
+     */
+
+    val stockSymbols = quandlLoader.stockSymbols
+    Await.result(stockSymbols, 2 minutes)
+    val symbols = stockSymbols.value.get.get
+    symbols foreach { symbol => stockSymbolDatabase.saveStockSymbol(symbol) }
+    println(symbols.length)
   }
 
 }

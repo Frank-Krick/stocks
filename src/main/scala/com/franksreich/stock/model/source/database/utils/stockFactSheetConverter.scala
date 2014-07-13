@@ -27,7 +27,7 @@ import org.bson.types.ObjectId
 import org.joda.time.DateTime
 
 /** Converter between model classes and bson representation */
-object converter {
+object stockFactSheetConverter {
   RegisterJodaTimeConversionHelpers()
 
   /** Convert stock fact sheet to bson
