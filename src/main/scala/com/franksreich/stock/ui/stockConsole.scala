@@ -16,8 +16,10 @@
 package com.franksreich.stock.ui
 
 import com.franksreich.stock.model.StockFactSheet
+import com.franksreich.stock.model.source.database.stockFactSheetDatabase
 
 import com.github.nscala_time.time.Imports.{DateTime, DateTimeFormat}
+import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -29,9 +31,18 @@ import scala.concurrent.duration._
 object stockConsole {
 
   def main(args: Array[String]) {
+    RegisterJodaTimeConversionHelpers()
+
     val targetDate = DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime("2014-07-11")
-    val sheet = StockFactSheet("T", targetDate)
-    Await.ready(sheet, 2 minutes)
+    val stockFactSheet = StockFactSheet("MSFT", targetDate)
+
+    /*
+    stockFactSheet onSuccess {
+      case s => stockFactSheetDatabase.saveStockFactSheet(s)
+    }
+     */
+
+    Thread.sleep(5000 * 5)
   }
 
 }

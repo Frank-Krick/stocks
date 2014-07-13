@@ -33,6 +33,25 @@ import scala.util.{Failure, Success}
 object StockFactSheet {
   val logger = LoggerFactory.getLogger(StockFactSheet.getClass)
 
+  def apply(stockSymbol: String, toBeDate: DateTime): Future[StockFactSheet] = {
+    val stockFactSheet = stockFactSheetDatabase.loadStockFactSheet(stockSymbol).getOrElse(StockFactSheet(stockSymbol))
+    val fundamentals = Fundamentals(stockSymbol, stockFactSheet.fundamentals, toBeDate)
+    val result = Promise[StockFactSheet]()
+    fundamentals onSuccess { case f =>
+      result success StockFactSheet(new ObjectId(), stockSymbol, f, StockPrice())
+    }
+    result future
+  }
+
+  def apply(stockSymbol: String): StockFactSheet = {
+    StockFactSheet(new ObjectId(), stockSymbol, Fundamentals(), StockPrice())
+  }
+
+  def apply(id: ObjectId, stockSymbol: String, fundamentals: Fundamentals, stockPrice: StockPrice): StockFactSheet = {
+    new StockFactSheet(id, stockSymbol, fundamentals, stockPrice)
+  }
+
+  /*
   /** Load stock fact sheet from database and update it if necessary.
     *
     * @param stockSymbol Identifies the company
@@ -139,36 +158,12 @@ object StockFactSheet {
     if (needsUpdate(toBeDate, timestamp)) Option(loader(stockSymbol))
     else None
   }
+   */
 }
 
 /** Fact sheet for a single stock */
 class StockFactSheet(
     val id: ObjectId,
     val stockSymbol: String,
-    val fundamentals: Fundamentals) {
-
-  /** Timestamps of the last updates for each member */
-  object timestamps {
-    /** Last update time for cash and equivalents
-     *
-     * Initialized to last year to ensure update if created
-     */
-    var cashAndEquivalents = new DateTime(0)
-
-    /** Last update time for cash and equivalents
-     *
-     * Initialized to last year to ensure update if created
-     */
-    var longTermDebt = new DateTime(0)
-  }
-
-  /** Cash and equivalents time series */
-  var cashAndEquivalents = List[(DateTime, BigDecimal)]()
-
-  /** Long term debt time series */
-  var longTermDebt = List[(DateTime, BigDecimal)]()
-
-  /** Stock prices */
-  var stockPrice = StockPrice()
-
-}
+    val fundamentals: Fundamentals,
+    val stockPrice: StockPrice) {}

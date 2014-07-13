@@ -45,6 +45,9 @@ object Fundamentals {
     new Fundamentals(BalanceSheet(), CashFlow(), IncomeStatement())
   }
 
+  def apply(balanceSheet: BalanceSheet, cashFlow: CashFlow, incomeStatement: IncomeStatement): Fundamentals = {
+    new Fundamentals(balanceSheet, cashFlow, incomeStatement)
+  }
 }
 /**
  * Fundamentals
