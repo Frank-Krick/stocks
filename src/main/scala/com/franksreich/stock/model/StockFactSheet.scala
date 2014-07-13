@@ -36,9 +36,15 @@ object StockFactSheet {
   def apply(stockSymbol: String, toBeDate: DateTime): Future[StockFactSheet] = {
     val stockFactSheet = stockFactSheetDatabase.loadStockFactSheet(stockSymbol).getOrElse(StockFactSheet(stockSymbol))
     val fundamentals = Fundamentals(stockSymbol, stockFactSheet.fundamentals, toBeDate)
+    val prices = StockPrice(stockSymbol, stockFactSheet.stockPrice, toBeDate)
     val result = Promise[StockFactSheet]()
-    fundamentals onSuccess { case f =>
-      result success StockFactSheet(new ObjectId(), stockSymbol, f, StockPrice())
+    Future.sequence(List(fundamentals, prices)) onSuccess { case f =>
+      result success StockFactSheet(
+        stockFactSheet.id,
+        stockSymbol,
+        f(0).asInstanceOf[Fundamentals],
+        f(1).asInstanceOf[StockPrice]
+      )
     }
     result future
   }

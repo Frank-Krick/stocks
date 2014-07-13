@@ -19,12 +19,12 @@ import com.franksreich.stock.model.source.database.utils.converter
 import com.franksreich.stock.model.StockFactSheet
 import com.franksreich.stock.config
 
-import com.mongodb.casbah.Imports.MongoClientURI
-import com.mongodb.casbah.Imports.MongoClient
-import com.mongodb.casbah.Imports.MongoDBObject
+import com.mongodb.casbah.Imports._
+import org.slf4j.LoggerFactory
 
 /** Access stock fact sheets */
 object stockFactSheetDatabase {
+  val logger = LoggerFactory.getLogger(stockFactSheetDatabase.getClass)
   val mongoClientUrl = MongoClientURI(config.mongoUrl)
   val mongoClient = MongoClient(mongoClientUrl)
   val database = mongoClient("stocks")
@@ -35,7 +35,10 @@ object stockFactSheetDatabase {
    * @param factSheet Fact sheet to save to database
    */
   def saveStockFactSheet(factSheet: StockFactSheet) {
-    collection.insert(converter.convertStockFactSheetToBson(factSheet))
+    logger.debug("Save stock fact sheet {} to mongo db", List(factSheet.id.toString(), factSheet.stockSymbol))
+    val query = MongoDBObject("_id" -> factSheet.id)
+    val document = converter.convertStockFactSheetToBson(factSheet)
+    collection.update(query, document, upsert=true)
   }
 
   /** Loads a fact sheet identified by stock symbol
@@ -44,12 +47,17 @@ object stockFactSheetDatabase {
    * @return Stock fact sheet loaded from database
    */
   def loadStockFactSheet(stockSymbol: String): Option[StockFactSheet] = {
+    logger.debug("Try to load stock fact sheet {} from mongo db", stockSymbol)
     val query = MongoDBObject("stockSymbol" -> stockSymbol)
     val result = collection.findOne(query)
 
     result match {
-      case Some(document) => Option(converter.convertStockFactSheetFromBson(new MongoDBObject(document)))
-      case None => None
+      case Some(document) =>
+        logger.debug("Stock fact sheet {} successfully loaded", stockSymbol)
+        Option(converter.convertStockFactSheetFromBson(new MongoDBObject(document)))
+      case None =>
+        logger.debug("Stock fact sheet {} not found", stockSymbol)
+        None
     }
   }
 

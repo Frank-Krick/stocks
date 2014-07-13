@@ -36,11 +36,9 @@ object stockConsole {
     val targetDate = DateTimeFormat.forPattern("yyyy-MM-dd").parseDateTime("2014-07-11")
     val stockFactSheet = StockFactSheet("MSFT", targetDate)
 
-    /*
     stockFactSheet onSuccess {
       case s => stockFactSheetDatabase.saveStockFactSheet(s)
     }
-     */
 
     Thread.sleep(5000 * 5)
   }

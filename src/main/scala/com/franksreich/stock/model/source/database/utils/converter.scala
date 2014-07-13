@@ -17,7 +17,7 @@ package com.franksreich.stock.model.source.database.utils
 
 import com.franksreich.stock.model.{StockPrice, StockFactSheet}
 import com.franksreich.stock.model.fundamentals.{CashFlow, IncomeStatement, BalanceSheet, Fundamentals}
-import com.franksreich.stock.model.types.TimestampedTimeSeries
+import com.franksreich.stock.model.types.{TimeSeries, TimestampedTimeSeries}
 
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
@@ -37,11 +37,13 @@ object converter {
    */
   def convertStockFactSheetToBson(factSheet: StockFactSheet): DBObject = {
     val fundamentals = convertFundamentalsToBson(factSheet.fundamentals)
+    val stockPrice = convertStockPriceToBson(factSheet.stockPrice)
 
     MongoDBObject(
       "_id" -> factSheet.id,
       "stockSymbol" -> factSheet.stockSymbol,
-      "fundamentals" -> fundamentals
+      "fundamentals" -> fundamentals,
+      "stockPrice" -> stockPrice
     )
   }
 
@@ -52,11 +54,62 @@ object converter {
    */
   def convertStockFactSheetFromBson(bson: MongoDBObject): StockFactSheet = {
     val fundamentals = convertFundamentalsFromBson(bson.as[DBObject]("fundamentals"))
+    val stockPrice = convertStockPriceFromBson(bson.as[DBObject]("stockPrice"))
     new StockFactSheet(
       bson.as[ObjectId]("_id"),
       bson.as[String]("stockSymbol"),
       fundamentals,
-      StockPrice())
+      stockPrice)
+  }
+
+  def convertStockPriceToBson(stockPrice: StockPrice): DBObject = {
+    MongoDBObject(
+      "timestamp" -> stockPrice.timestamp,
+      "open" -> stockPrice.open.map( v => (v._1, v._2.toString()) ),
+      "high" -> stockPrice.high.map( v => (v._1, v._2.toString()) ),
+      "low" -> stockPrice.low.map( v => (v._1, v._2.toString()) ),
+      "close" -> stockPrice.close.map( v => (v._1, v._2.toString()) ),
+      "volume" -> stockPrice.volume.map( v => (v._1, v._2.toString()) ),
+      "split" -> stockPrice.split.map( v => (v._1, v._2.toString()) ),
+      "adjustedOpen" -> stockPrice.adjustedOpen.map( v => (v._1, v._2.toString()) ),
+      "adjustedHigh" -> stockPrice.adjustedHigh.map( v => (v._1, v._2.toString()) ),
+      "adjustedLow" -> stockPrice.adjustedLow.map( v => (v._1, v._2.toString()) ),
+      "adjustedClose" -> stockPrice.adjustedClose.map( v => (v._1, v._2.toString()) ),
+      "adjustedVolume" -> stockPrice.adjustedVolume.map( v => (v._1, v._2.toString()) )
+    )
+  }
+
+  def convertStockPriceFromBson(bson: MongoDBObject): StockPrice = {
+    StockPrice(
+      bson.as[Some[DateTime]]("timestamp").getOrElse(new DateTime(0)),
+      timeSeriesFromBson("open", bson),
+      timeSeriesFromBson("high", bson),
+      timeSeriesFromBson("low", bson),
+      timeSeriesFromBson("close", bson),
+      timeSeriesFromBson("volume", bson),
+      timeSeriesFromBson("split", bson),
+      timeSeriesFromBson("adjustedOpen", bson),
+      timeSeriesFromBson("adjustedHigh", bson),
+      timeSeriesFromBson("adjustedLow", bson),
+      timeSeriesFromBson("adjustedClose", bson),
+      timeSeriesFromBson("adjustedVolume", bson)
+    )
+  }
+
+  def convertFundamentalsToBson(fundamentals: Fundamentals): DBObject = {
+    MongoDBObject(
+      "cashFlow" -> convertCashFlowToBson(fundamentals.cashFlow),
+      "incomeStatement" -> convertIncomeStatementToBson(fundamentals.incomeStatement),
+      "balanceSheet" -> convertBalanceSheetToBson(fundamentals.balanceSheet)
+    )
+  }
+
+  def convertFundamentalsFromBson(bson: MongoDBObject): Fundamentals = {
+    val balanceSheet = convertBalanceSheetFromBson(bson.as[DBObject]("balanceSheet"))
+    val cashFlow = convertCashFlowFromBson(bson.as[DBObject]("cashFlow"))
+    val incomeStatement = convertIncomeStatementFromBson(bson.as[DBObject]("incomeStatement"))
+
+    Fundamentals(balanceSheet, cashFlow, incomeStatement)
   }
 
   def convertBalanceSheetToBson(balanceSheet: BalanceSheet): DBObject = {
@@ -380,22 +433,6 @@ object converter {
     CashFlow(cashFlowData)
   }
 
-  def convertFundamentalsToBson(fundamentals: Fundamentals): DBObject = {
-    MongoDBObject(
-      "cashFlow" -> convertCashFlowToBson(fundamentals.cashFlow),
-      "incomeStatement" -> convertIncomeStatementToBson(fundamentals.incomeStatement),
-      "balanceSheet" -> convertBalanceSheetToBson(fundamentals.balanceSheet)
-    )
-  }
-
-  def convertFundamentalsFromBson(bson: MongoDBObject): Fundamentals = {
-    val balanceSheet = convertBalanceSheetFromBson(bson.as[DBObject]("balanceSheet"))
-    val cashFlow = convertCashFlowFromBson(bson.as[DBObject]("cashFlow"))
-    val incomeStatement = convertIncomeStatementFromBson(bson.as[DBObject]("incomeStatement"))
-
-    Fundamentals(balanceSheet, cashFlow, incomeStatement)
-  }
-
   def timestampedTimeSeriesToBson(timestampedTimeSeries: TimestampedTimeSeries): DBObject = {
     MongoDBObject(
       "timestamp" -> timestampedTimeSeries._1,
@@ -418,7 +455,7 @@ object converter {
    * @param bson Bson representation
    * @return List with date and value
    */
-  private def parseBsonDateValueList(key: String, bson: MongoDBObject): List[(DateTime, BigDecimal)] = {
+  private def timeSeriesFromBson(key: String, bson: MongoDBObject): TimeSeries = {
     val valueList = bson.as[List[BasicDBList]](key)
     valueList map { list =>
       (list.get(0).asInstanceOf[DateTime], BigDecimal(list.get(1).asInstanceOf[String]))

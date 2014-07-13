@@ -15,11 +15,21 @@
  */
 package com.franksreich.stock.model
 
+import com.franksreich.stock.model.source.quandl.quandlLoader
 import com.franksreich.stock.model.types.TimeSeries
-import com.github.nscala_time.time.Imports.DateTime
+
+import com.github.nscala_time.time.Imports._
+
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /** Factory for stock prices */
 object StockPrice {
+  def apply(stockSymbol: String, old: StockPrice, toBeDate: DateTime): Future[StockPrice] = {
+    if (old.timestamp < toBeDate) quandlLoader.getStockPrices(stockSymbol)
+    else Future { old }
+  }
+
   def apply(
       timestamp: DateTime,
       open: TimeSeries,

@@ -479,6 +479,7 @@ object quandlLoader {
    * @return Time series of stock prices
    */
   def getStockPrices(stockSymbol: String): Future[StockPrice] = {
+    logger.debug("Loading stock prices for stock symbol {}", stockSymbol)
     val url = stockPriceUrl(stockSymbol)
     val future = GET(url).apply
     future map { response =>
