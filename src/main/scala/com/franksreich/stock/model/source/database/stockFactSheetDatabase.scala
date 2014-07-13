@@ -30,6 +30,8 @@ object stockFactSheetDatabase {
   val database = mongoClient("stocks")
   val collection = database("factSheets")
 
+  collection.ensureIndex(MongoDBObject( "stockSymbol" -> 1 ), MongoDBObject( "unique" -> true ))
+
   /** Save fact sheet to database
    *
    * @param factSheet Fact sheet to save to database
