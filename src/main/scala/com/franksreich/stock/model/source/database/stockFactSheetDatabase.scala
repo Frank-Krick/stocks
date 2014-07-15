@@ -24,8 +24,8 @@ import com.mongodb.casbah.Imports._
 import org.slf4j.LoggerFactory
 
 /** Access stock fact sheets */
-object stockFactSheetDatabase {
-  val logger = LoggerFactory.getLogger(stockFactSheetDatabase.getClass)
+class StockFactSheetDatabase(mongoUrl: String) {
+  val logger = LoggerFactory.getLogger(this.getClass)
   val mongoClientUrl = MongoClientURI(config.mongoUrl)
   val mongoClient = MongoClient(mongoClientUrl)
   val database = mongoClient("stocks")
@@ -34,9 +34,9 @@ object stockFactSheetDatabase {
   collection.ensureIndex(MongoDBObject( "stockSymbol" -> 1 ), MongoDBObject( "unique" -> true ))
 
   /** Save fact sheet to database
-   *
-   * @param factSheet Fact sheet to save to database
-   */
+    *
+    * @param factSheet Fact sheet to save to database
+    */
   def saveStockFactSheet(factSheet: StockFactSheet) {
     logger.debug("Save stock fact sheet {} to mongo db", List(factSheet.id.toString(), factSheet.stockSymbol))
     val query = MongoDBObject("_id" -> factSheet.id)
@@ -45,10 +45,10 @@ object stockFactSheetDatabase {
   }
 
   /** Loads a fact sheet identified by stock symbol
-   *
-   * @param stockSymbol Stock symbol of the fact sheet to retrieve
-   * @return Stock fact sheet loaded from database
-   */
+    *
+    * @param stockSymbol Stock symbol of the fact sheet to retrieve
+    * @return Stock fact sheet loaded from database
+    */
   def loadStockFactSheet(stockSymbol: String): Option[StockFactSheet] = {
     logger.debug("Try to load stock fact sheet {} from mongo db", stockSymbol)
     val query = MongoDBObject("stockSymbol" -> stockSymbol)
