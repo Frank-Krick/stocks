@@ -17,6 +17,6 @@ package com.franksreich.stock
 
 /** Configuration information */
 object config {
-  val quandlApiKey = ""
-  val mongoUrl = "mongodb://localhost:27017/"
+  var quandlApiKey = ""
+  var mongoUrl = ""
 }

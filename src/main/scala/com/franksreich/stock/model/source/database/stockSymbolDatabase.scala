@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory
  * Database to store information about stock symbols
  */
 object stockSymbolDatabase {
-  val logger = LoggerFactory.getLogger(stockFactSheetDatabase.getClass)
+  val logger = LoggerFactory.getLogger(stockSymbolDatabase.getClass)
   val mongoClientUrl = MongoClientURI(config.mongoUrl)
   val mongoClient = MongoClient(mongoClientUrl)
   val database = mongoClient("stocks")
