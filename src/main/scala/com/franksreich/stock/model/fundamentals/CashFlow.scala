@@ -15,7 +15,7 @@
  */
 package com.franksreich.stock.model.fundamentals
 
-import com.franksreich.stock.model.source.quandl.quandlLoader
+import com.franksreich.stock.model.source.quandl.QuandlLoader
 import com.franksreich.stock.model.types.TimestampedTimeSeries
 
 import com.github.nscala_time.time.Imports._
@@ -26,7 +26,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /** Companion class for cash flow */
 object CashFlow {
 
-  def apply(stockSymbol: String, old: CashFlow, toBeDate: DateTime): Future[CashFlow] = {
+  def apply(
+    stockSymbol: String,
+    old: CashFlow,
+    toBeDate: DateTime,
+    quandlLoader: QuandlLoader = new QuandlLoader): Future[CashFlow] = {
+
     val netIncomeStartingLine = if (old.netIncomeStartingLine._1 < toBeDate) {
       quandlLoader.cashFlow.netIncomeStartingLine(stockSymbol) map { v => (DateTime.now, v) }
     } else {

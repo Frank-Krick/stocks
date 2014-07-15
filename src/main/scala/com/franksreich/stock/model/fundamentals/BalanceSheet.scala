@@ -15,7 +15,7 @@
  */
 package com.franksreich.stock.model.fundamentals
 
-import com.franksreich.stock.model.source.quandl.quandlLoader
+import com.franksreich.stock.model.source.quandl.QuandlLoader
 import com.franksreich.stock.model.types.TimestampedTimeSeries
 
 import com.github.nscala_time.time.Imports._
@@ -26,7 +26,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /** Companion class for balance sheet */
 object BalanceSheet {
 
-  def apply(stockSymbol: String, old: BalanceSheet, toBeDate: DateTime): Future[BalanceSheet] = {
+  def apply(
+    stockSymbol: String,
+    old: BalanceSheet,
+    toBeDate: DateTime,
+    quandlLoader: QuandlLoader = new QuandlLoader): Future[BalanceSheet] = {
+
     val accountsReceivable = if (old.accountsReceivable._1 < toBeDate) {
       quandlLoader.balanceSheet.accountsReceivable(stockSymbol) map { v => (DateTime.now, v) }
     } else {
